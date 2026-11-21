@@ -1,0 +1,32 @@
+name: Build Mini Cashier to EXE
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: mingw-w64-ucrt-x86_64-gcc
+
+      - name: Compile C++ to EXE
+        shell: msys2 {0}
+        run: |
+          g++ -std=c++17 -static -static-libgcc -static-libstdc++ main.cpp -o main.exe
+
+      - name: Upload EXE File
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mini-Cashier-Program
+          path: main.exe
